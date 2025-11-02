@@ -1,0 +1,22 @@
+{
+  "name": "workflow-actions",
+  "version": "0.0.1",
+  "description": "",
+  "scripts": {
+    "build:create-labels": "esbuild src/actions/create-labels.ts --sourcemap=inline --format=cjs --bundle --platform=node --target=node20 --outdir=create-labels/dist"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@actions/core": "^1.11.1",
+    "@actions/exec": "^1.1.1",
+    "@actions/github": "^6.0.1",
+    "@octokit/rest": "^22.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.9.2",
+    "esbuild": "^0.25.12",
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,0 +1,5 @@
+.vscode/
+.claude/
+.mcp.json
+.DS_Store
+node_modules/
