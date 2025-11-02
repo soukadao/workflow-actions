@@ -1,4 +1,4 @@
-import github from "@actions/github";
+import * as github from "@actions/github";
 import { Context } from "@actions/github/lib/context";
 
 export function getContext(): Context {
