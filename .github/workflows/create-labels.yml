@@ -9,4 +9,4 @@ jobs:
       issues: write
     steps:
       - uses: actions/checkout@v4
-      - uses: soukadao/workflow-actions/create-labels@v1
+      - uses: soukadao/workflow-actions/create-labels
