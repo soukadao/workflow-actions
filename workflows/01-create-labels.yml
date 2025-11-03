@@ -1,0 +1,18 @@
+name: Create Labels
+on:
+  workflow_dispatch:
+
+jobs:
+  create_labels:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Create Labels
+        uses: soukadao/workflow-actions/create-labels@main

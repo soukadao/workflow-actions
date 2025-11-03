@@ -8,11 +8,11 @@ async function createLabels() {
         "label",
         "create",
         label.name,
-        "-d",
+        "--description",
         label.description,
-        "-c",
+        "--color",
         label.color,
-        "-f"
+        "--force"
       ]);
     })
   );
