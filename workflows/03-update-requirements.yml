@@ -89,8 +89,9 @@ jobs:
     permissions:
       issues: write
     steps:
-      - run: gh issue edit $ISSUE_NUMBER --body "$CODEX_FINAL_MESSAGE"
+      - run: gh issue edit $ISSUE_NUMBER --body "$CODEX_FINAL_MESSAGE" --repo "$REPO"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
           CODEX_FINAL_MESSAGE: ${{ needs.update_requirements.outputs.final_message }}
+          REPO: ${{ github.repository }}
