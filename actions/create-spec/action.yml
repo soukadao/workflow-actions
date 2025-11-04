@@ -1,0 +1,24 @@
+name: Create Spec
+description: Creates a spec issue and updates the requirements issue status
+inputs:
+  final_output:
+    description: 'JSON output from codex containing title and body'
+    required: true
+  repository:
+    description: 'Repository in the format owner/repo'
+    required: true
+  requirements_issue_number:
+    description: 'Requirements issue number to update'
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Run create-spec
+      id: run
+      shell: bash
+      working-directory: ${{ github.action_path }}/../..
+      env:
+        INPUT_FINAL_OUTPUT: ${{ inputs.final_output }}
+        INPUT_REPOSITORY: ${{ inputs.repository }}
+        INPUT_REQUIREMENTS_ISSUE_NUMBER: ${{ inputs.requirements_issue_number }}
+      run: node dist/actions/create-spec.js

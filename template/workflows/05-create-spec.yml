@@ -1,0 +1,149 @@
+name: Create Spec
+on:
+  issues:
+    types: [closed]
+jobs:
+  create_spec:
+    runs-on: ubuntu-latest
+    if: contains(github.event.issue.labels.*.name, 'doc-type:requirements') && contains(github.event.issue.labels.*.name, 'doc-state:draft') && contains(github.event.issue.labels.*.name, 'create-branch')
+    permissions:
+      issues: read
+      contents: read
+    outputs:
+      final_output: ${{ steps.run_codex.outputs.final-message }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Create Spec Documents
+        id: run_codex
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          output-schema-file: .github/schema/spec.json
+          prompt: |
+            以下の要求定義ドキュメントに基づいて、詳細な機能仕様書を作成してください。
+
+            # 要求定義ドキュメント
+
+            ${{ github.event.issue.body }}
+
+            ---
+
+            各機能について、以下の構造で機能仕様書を作成してください：
+
+            > [!NOTE]
+            > AIによって生成されました。
+
+            # 機能仕様書
+
+            要求定義ドキュメント: #${{ github.event.issue.number }}
+
+            ## [機能名]
+
+            <!--
+            例
+
+            ## [機能名]
+
+            ### ユーザーストーリー
+
+            xxxxxxxxxxxxxxxxxxxxx
+
+            ### 機能要件
+
+            - aaa
+            - bbb
+            - ccc
+
+            ### 非機能要件
+
+            - aaa
+            - bbb
+            - ccc
+
+            ### テストケース
+
+            - aaa
+            - bbb
+            - ccc
+
+            ## [機能名]
+
+            ### ユーザーストーリー
+
+            xxxxxxxxxxxxxxxxxxxxx
+
+            ### 機能要件
+
+            - aaa
+            - bbb
+            - ccc
+
+            ### 非機能要件
+
+            - aaa
+            - bbb
+            - ccc
+
+            ### テストケース
+
+            - aaa
+            - bbb
+            - ccc
+
+            ...
+            -->
+
+            ### ユーザーストーリー
+
+            <!-- この機能を実装する価値を記述してください -->
+
+            ### 機能要件
+
+            <!-- この機能に必要な要件を箇条書きで列挙してください -->
+
+            ### 非機能要件
+
+            <!-- この機能に必要な非機能要件を箇条書きで列挙してください -->
+
+            ### ライブラリとパッケージ
+
+            <!-- この機能で使用するライブラリとパッケージを記述してください -->
+
+            ### 入力パラメータ
+
+            <!-- この機能に必要な入力パラメータを定義してください -->
+
+            ### 出力パラメータ
+
+            <!-- この機能に必要な出力パラメータを定義してください -->
+
+            ### テストケース
+
+            <!-- テストケースを箇条書きで列挙してください。包括的なテストを確実にするため、エッジケースも含めてください -->
+
+            ガイドライン:
+            - 要求定義ドキュメントの言語を検出し、仕様書全体でその言語を使用してください
+            - 要求定義ドキュメントと同じ言語でドキュメント全体を生成してください（ヘッダー、ラベル、すべてのテキストを含む）
+
+  create_issue:
+    runs-on: ubuntu-latest
+    needs: create_spec
+    permissions:
+      issues: write
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Create Spec Issue
+        uses: soukadao/workflow-actions/actions/create-spec@main
+        with:
+          final_output: ${{ needs.create_spec.outputs.final_output }}
+          repository: ${{ github.repository }}
+          requirements_issue_number: ${{ github.event.issue.number }}

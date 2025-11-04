@@ -1,0 +1,67 @@
+name: Update Spec
+on:
+  issue_comment:
+    types: [created]
+jobs:
+  update_spec:
+    runs-on: ubuntu-latest
+    if: contains(github.event.issue.labels.*.name, 'doc-type:spec') && contains(github.event.issue.labels.*.name, 'doc-state:draft')
+    permissions:
+      contents: read
+    outputs:
+      final_output: ${{ steps.run_codex.outputs.final-message }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Update Spec Document
+        id: run_codex
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          prompt: |
+            これは ${{ github.repository }} のイシュー #${{ github.event.issue.number }} です。
+
+            現在の仕様書:
+            ----
+            ${{ github.event.issue.body }}
+            ----
+
+            更新要求のコメント:
+            ----
+            ${{ github.event.comment.body }}
+            ----
+
+            ユーザーのコメントに基づいて仕様書を更新してください。
+
+            ガイドライン:
+            - 現在のドキュメントと同じ言語を使用してください
+            - 元の構造とマークダウンフォーマットを保持してください
+            - 要求定義ドキュメントへの参照は変更しないでください
+            - コメントで指定された関連セクションのみを更新してください
+            - 要求された場合は新しいセクションや項目を追加してください
+            - 要求された場合は既存のコンテンツを修正してください
+            - 明示的に要求された場合はコンテンツを削除してください
+            - コンテンツを追加/修正する際は、元の文体と詳細レベルに合わせてください
+            - 更新された完全なドキュメントのみを返してください（追加の説明やコメントは不要です）
+
+  update_issue:
+    runs-on: ubuntu-latest
+    needs: update_spec
+    permissions:
+      issues: write
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Update Spec Issue
+        uses: soukadao/workflow-actions/actions/update-spec@main
+        with:
+          final_output: ${{ needs.update_spec.outputs.final_output }}
+          repository: ${{ github.repository }}
+          issue_number: ${{ github.event.issue.number }}

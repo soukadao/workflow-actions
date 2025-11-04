@@ -1,0 +1,18 @@
+{
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "仕様ドキュメント(Issue)のタイトル"
+    },
+    "body": {
+      "type": "string",
+      "description": "仕様ドキュメント(Issue)の本文"
+    }
+  },
+  "required": [
+    "title",
+    "body"
+  ],
+  "additionalProperties": false
+}
