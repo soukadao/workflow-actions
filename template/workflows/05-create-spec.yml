@@ -135,6 +135,8 @@ jobs:
     needs: create_spec
     permissions:
       issues: write
+    env:
+      GH_TOKEN: ${{ github.token }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v5
