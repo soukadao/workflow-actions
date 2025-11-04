@@ -7,7 +7,7 @@
     },
     "requirements": {
       "type": "array",
-      "description": "必要な要求事項一覧（ユーザー視点で何ができるか）",
+      "description": "必要な要求事項一覧をプレフィックスなしで要求を記述する（ユーザー視点で何ができるか）",
       "items": {
         "type": "string"
       }
