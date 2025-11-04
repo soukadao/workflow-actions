@@ -1,0 +1,20 @@
+name: Create Phase Branch
+description: Creates a new phase branch from the main branch and adds the branch name to the issue body
+inputs:
+  repository:
+    description: 'Repository in the format owner/repo'
+    required: true
+  issue_body:
+    description: 'Current issue body content'
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Run create-phase-branch
+      id: run
+      shell: bash
+      working-directory: ${{ github.action_path }}/../..
+      env:
+        INPUT_REPOSITORY: ${{ inputs.repository }}
+        INPUT_ISSUE_BODY: ${{ inputs.issue_body }}
+      run: node dist/actions/create-phase-branch.js

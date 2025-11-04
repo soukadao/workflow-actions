@@ -44,6 +44,11 @@ const labels: Label[] = [
     name: "task-state:done",
     description: "Task state: Done",
     color: "#20798b"
+  },
+  {
+    name: "create-branch",
+    description: "Branch has been created for this issue",
+    color: "#20798b"
   }
 ];
 

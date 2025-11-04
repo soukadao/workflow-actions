@@ -1,0 +1,23 @@
+name: Create Phase Branch
+on:
+  issues:
+    types: [closed]
+
+jobs:
+  create_phase_branch:
+    runs-on: ubuntu-latest
+    if: contains(github.event.issue.labels.*.name, 'doc-type:requirements') && contains(github.event.issue.labels.*.name, 'doc-state:draft') && !contains(github.event.issue.labels.*.name, 'create-branch')
+    permissions:
+      contents: write
+      issues: write
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Create Phase Branch
+        uses: soukadao/workflow-actions/actions/create-phase-branch@main
+        with:
+          repository: ${{ github.repository }}
+          issue_body: ${{ github.event.issue.body }}
