@@ -2,4 +2,4 @@ name: "Create Labels Action"
 description: "Create GitHub labels for document types, document states, and task states"
 runs:
   using: "node20"
-  main: "dist/create-labels.js"
+  main: "dist/index.js"

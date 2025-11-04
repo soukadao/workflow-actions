@@ -1,0 +1,21 @@
+{
+  "type": "object",
+  "properties": {
+    "purpose": {
+      "type": "string",
+      "description": "ユーザーが実現したいことの要約"
+    },
+    "requirements": {
+      "type": "array",
+      "description": "必要な要求事項一覧（ユーザー視点で何ができるか）",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "purpose",
+    "requirements"
+  ],
+  "additionalProperties": false
+}

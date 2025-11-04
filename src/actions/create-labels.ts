@@ -1,5 +1,5 @@
 import * as exec from "@actions/exec";
-import labels from "./labels";
+import labels from "../shared/labels";
 
 async function createLabels() {
   await Promise.all(

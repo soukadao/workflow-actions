@@ -3,7 +3,9 @@
   "version": "0.0.1",
   "description": "",
   "scripts": {
-    "build:create-labels": "esbuild src/actions/create-labels.ts --sourcemap=inline --format=cjs --bundle --platform=node --target=node20 --outdir=create-labels/dist"
+    "build:create-labels": "esbuild src/actions/create-labels.ts --sourcemap=inline --format=cjs --bundle --platform=node --target=node20 --outfile=actions/create-labels/dist/index.js",
+    "build:create-requirements": "esbuild src/actions/create-requirements.ts --sourcemap=inline --format=cjs --bundle --platform=node --target=node20 --outfile=actions/create-requirements/dist/index.js",
+    "build": "pnpm run build:create-labels && npm run build:create-requirements"
   },
   "keywords": [],
   "author": "",
@@ -12,7 +14,8 @@
     "@actions/core": "^1.11.1",
     "@actions/exec": "^1.1.1",
     "@actions/github": "^6.0.1",
-    "@octokit/rest": "^22.0.1"
+    "@octokit/rest": "^22.0.1",
+    "ts-dedent": "^2.2.0"
   },
   "devDependencies": {
     "@types/node": "^24.9.2",

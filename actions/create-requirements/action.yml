@@ -1,0 +1,11 @@
+name: "Create Requirements Document"
+description: "Generates a structured requirements document from OpenAI output and updates the issue"
+
+inputs:
+  final_output:
+    description: "JSON output from OpenAI containing purpose and requirements"
+    required: true
+
+runs:
+  using: "node20"
+  main: "dist/index.js"

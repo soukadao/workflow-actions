@@ -15,4 +15,4 @@ jobs:
         with:
           fetch-depth: 0
       - name: Create Labels
-        uses: soukadao/workflow-actions/create-labels@main
+        uses: soukadao/workflow-actions/actions/create-labels@main

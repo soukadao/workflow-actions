@@ -1,0 +1,67 @@
+name: Create Requirements
+on:
+  issues:
+    types: [opened]
+jobs:
+  create_requirements:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      final_output: ${{ steps.run_codex.outputs.final-message }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Format Requirements Issue
+        id: run_codex
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          output-schema-file: .github/schema/requirements.json
+          prompt: |
+            これは ${{ github.repository }} のイシュー #${{ github.event.issue.number }} です。
+
+            あなたは要件アナリストです。イシューの内容を詳細で構造化された要件ドキュメントに変換してください。
+
+            本文:
+            ----
+            ${{ github.event.issue.body }}
+            ----
+
+            ## タスク:
+
+            ### イシューの内容が抽象的または曖昧な場合:
+            1. 核となるコンセプトや目的を抽出する
+            2. 以下の方法で要件を詳細化する:
+               - 抽象的なアイデアを具体的で実行可能な要件に分解する
+               - 技術仕様、ユーザーインタラクション、システム動作を特定する
+               - エッジケース、制約、非機能要件を考慮する
+               - 測定可能な受入基準を追加する
+               - このタイプの機能/システムに対する業界のベストプラクティスを推測する
+
+            ### イシューの内容がすでに具体的で詳細な場合:
+            1. 明確性と一貫性のために文言を校正・洗練する
+            2. 要件を論理的に整理する
+            3. 各要件が以下の条件を満たしていることを確認する:
+               - 明確で曖昧さがない
+               - テスト可能で測定可能
+               - 適切にフォーマットされている
+            4. 文法的または構造的な問題を修正する
+
+  update_issue:
+    runs-on: ubuntu-latest
+    needs: create_requirements
+    permissions:
+      issues: write
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+
+      - name: Update Issue with Requirements
+        uses: soukadao/workflow-actions/actions/create-requirements@main
+        with:
+          final_output: ${{ needs.create_requirements.outputs.final_output }}
