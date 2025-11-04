@@ -8,13 +8,5 @@ inputs:
     description: 'Current issue body content'
     required: true
 runs:
-  using: composite
-  steps:
-    - name: Run create-phase-branch
-      id: run
-      shell: bash
-      working-directory: ${{ github.action_path }}/../..
-      env:
-        INPUT_REPOSITORY: ${{ inputs.repository }}
-        INPUT_ISSUE_BODY: ${{ inputs.issue_body }}
-      run: node dist/actions/create-phase-branch.js
+  using: node20
+  main: dist/index.js

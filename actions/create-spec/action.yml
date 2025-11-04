@@ -11,14 +11,5 @@ inputs:
     description: 'Requirements issue number to update'
     required: true
 runs:
-  using: composite
-  steps:
-    - name: Run create-spec
-      id: run
-      shell: bash
-      working-directory: ${{ github.action_path }}/../..
-      env:
-        INPUT_FINAL_OUTPUT: ${{ inputs.final_output }}
-        INPUT_REPOSITORY: ${{ inputs.repository }}
-        INPUT_REQUIREMENTS_ISSUE_NUMBER: ${{ inputs.requirements_issue_number }}
-      run: node dist/actions/create-spec.js
+  using: node20
+  main: dist/index.js
