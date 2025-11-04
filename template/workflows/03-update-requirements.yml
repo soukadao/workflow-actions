@@ -1,0 +1,60 @@
+name: Update Requirements
+on:
+  issue_comment:
+    types: [created]
+jobs:
+  update_requirements:
+    runs-on: ubuntu-latest
+    if: contains(github.event.issue.labels.*.name, 'doc-type:requirements') && contains(github.event.issue.labels.*.name, 'doc-state:draft')
+    permissions:
+      contents: read
+    outputs:
+      final_message: ${{ steps.run_codex.outputs.final-message }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Update Requirements Document
+        id: run_codex
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          prompt: |
+            これは ${{ github.repository }} のイシュー #${{ github.event.issue.number }} です。
+
+            現在の要求定義ドキュメント:
+            ----
+            ${{ github.event.issue.body }}
+            ----
+
+            ユーザーのコメント:
+            ----
+            ${{ github.event.comment.body }}
+            ----
+
+            ## タスク:
+            ユーザーのコメントに基づいて要求定義ドキュメントを更新してください。
+
+            ## ガイドライン:
+            - コメントに基づいて関連するセクションのみを更新する
+            - 新しい要求事項は連番のID（R001, R002...）で追加する
+            - 既存の要求事項の変更が要求された場合は修正する
+            - 削除が明示的に要求された場合のみ要求事項を削除する
+            - 元のドキュメントの文体と詳細レベルに合わせる
+            - 完全に更新されたドキュメントのみを返す（追加の説明やコメントは不要）
+
+  update_issue:
+    runs-on: ubuntu-latest
+    needs: update_requirements
+    permissions:
+      issues: write
+    steps:
+      - run: gh issue edit $ISSUE_NUMBER --body "$CODEX_FINAL_MESSAGE" --repo "$REPO"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          CODEX_FINAL_MESSAGE: ${{ needs.update_requirements.outputs.final_message }}
+          REPO: ${{ github.repository }}
