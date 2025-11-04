@@ -44,7 +44,9 @@ async function createRequirements() {
     "--body",
     document,
     "--add-label",
-    "doc-type:requirements,doc-state:draft"
+    "doc-type:requirements,doc-state:draft",
+    "--repo",
+    core.getInput("repository", { required: true })
   ])
 }
 

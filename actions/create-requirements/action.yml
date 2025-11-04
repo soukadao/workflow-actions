@@ -5,6 +5,9 @@ inputs:
   final_output:
     description: "JSON output from OpenAI containing purpose and requirements"
     required: true
+  repository:
+    description: "GitHub repository in the format owner/repo"
+    required: true
 
 runs:
   using: "node20"

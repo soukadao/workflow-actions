@@ -57,11 +57,15 @@ jobs:
     needs: create_requirements
     permissions:
       issues: write
+    env:
+      GH_TOKEN: ${{ github.token }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v5
-
+        with:
+          fetch-depth: 0
       - name: Update Issue with Requirements
         uses: soukadao/workflow-actions/actions/create-requirements@main
         with:
           final_output: ${{ needs.create_requirements.outputs.final_output }}
+          repository: ${{ github.repository }}
