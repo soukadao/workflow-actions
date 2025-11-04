@@ -1,11 +1,11 @@
 name: Create Spec
 on:
   issues:
-    types: [closed]
+    types: [labeled]
 jobs:
   create_spec:
     runs-on: ubuntu-latest
-    if: contains(github.event.issue.labels.*.name, 'doc-type:requirements') && contains(github.event.issue.labels.*.name, 'doc-state:draft') && contains(github.event.issue.labels.*.name, 'create-branch')
+    if: github.event.label.name == 'create-branch' && contains(github.event.issue.labels.*.name, 'doc-type:requirements') && contains(github.event.issue.labels.*.name, 'doc-state:draft')
     permissions:
       issues: read
       contents: read

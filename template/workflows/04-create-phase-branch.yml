@@ -10,6 +10,8 @@ jobs:
     permissions:
       contents: write
       issues: write
+    env:
+      GH_TOKEN: ${{ github.token }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v5
