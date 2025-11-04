@@ -12,7 +12,8 @@ interface RequirementsOutput {
 function generateBaseDocument(purpose: string, requirements: string[]): string {
   const rows = requirements.map((requirement, index) => {
     const id = `R${String(index + 1).padStart(3, '0')}`;
-    return `| ${id.padEnd(14)} | ${requirement.padEnd(18)} |`;
+    const cleanedRequirement = requirement.replace(/^-\s*/, '');
+    return `| ${id.padEnd(14)} | ${cleanedRequirement.padEnd(18)} |`;
   }).join('\n');
 
   return dedent`
