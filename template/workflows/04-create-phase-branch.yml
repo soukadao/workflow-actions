@@ -23,3 +23,10 @@ jobs:
         with:
           repository: ${{ github.repository }}
           issue_body: ${{ github.event.issue.body }}
+
+      - name: Add Label
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          REPO: ${{ github.repository }}
+        run: gh issue edit $ISSUE_NUMBER --add-label "create-branch" --repo "$REPO"
