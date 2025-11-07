@@ -75,7 +75,7 @@ async function createTasks() {
       owner: github.context.issue.owner,
       repo: github.context.issue.repo,
       title: `タスク${task.id}`,
-      body: document,
+      body: dedent(document),
       labels: labels
     });
 
