@@ -25,7 +25,6 @@ jobs:
           issue_body: ${{ github.event.issue.body }}
   create_spec:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     permissions:
       issues: read
       contents: read
