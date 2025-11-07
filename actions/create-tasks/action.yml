@@ -1,0 +1,12 @@
+name: Create Tasks
+description: Creates task issues from spec document
+inputs:
+  final_output:
+    description: 'JSON output from codex containing tasks array'
+    required: true
+  body:
+    description: 'Body of the spec issue containing frontmatter'
+    required: true
+runs:
+  using: node20
+  main: dist/index.js

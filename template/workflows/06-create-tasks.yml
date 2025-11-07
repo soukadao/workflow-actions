@@ -1,0 +1,118 @@
+name: Create Tasks
+on:
+  issues:
+    types: [closed]
+
+jobs:
+  create_tasks:
+    runs-on: ubuntu-latest
+    if: contains(github.event.issue.labels.*.name, 'doc-type:spec') && contains(github.event.issue.labels.*.name, 'doc-state:draft')
+    permissions:
+      issues: write
+      contents: read
+    outputs:
+      final_output: ${{ steps.run_codex.outputs.final-message }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install context7 MCP
+        run: npm install -g @upstash/context7-mcp@v1.0.26
+
+      - name: Start MCP Server
+        run: |
+          cd $(npm root -g)/@upstash/context7-mcp
+          bun run dist/index.js --transport http --port 8000 &
+
+      - name: Create Task Documents
+        id: run_codex
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          output-schema-file: .github/schema/tasks.json
+          codex-args: |
+            --config mcp_servers={'context7'={'url'='http://localhost:8000/mcp'}}
+          prompt: |
+            以下の機能仕様書に基づいて、詳細なタスク定義を作成してください。
+
+            # 機能仕様書
+
+            ${{ github.event.issue.body }}
+
+            ---
+
+            **重要: 言語検出**
+            - まず、上記の仕様書の言語を検出してください
+            - すべてのタスクドキュメントを仕様書と同じ言語で生成してください（ヘッダー、ラベル、ステータス表示、すべてのテキストを含む）
+            - 検出された言語に基づいて、すべてのフィールドに適切な翻訳を使用してください
+
+            各タスクについて、以下の構造でタスクドキュメントを作成してください。
+
+            以下のテンプレートはフィールド名とフォーマットを示しています。検出された言語に適した翻訳でフィールド名を置き換えてください：
+
+            ガイドライン:
+            - **重要: 仕様を細かく実行可能なタスクに分割し、1タスク = 1ファイルの原則に従ってください**
+            - **各タスクは正確に1つのファイルを変更または作成する必要があります**（例: auth.ts用のタスク、user.ts用の別のタスク）
+            - 機能が複数のファイルを必要とする場合は、複数のタスクを作成してください（ファイルごとに1つ）
+            - タスク間の依存関係を特定してください（タスクBが最初に完了するためにタスクAを必要とする場合、タスクBはタスクAに依存します）
+            - **ライブラリ・フレームワークの最新情報について:**
+              - context7 MCPを使用して、必要なライブラリやフレームワークの最新のインストール方法、セットアップ手順を調査してください
+              - 各ライブラリの公式ドキュメントから最新のベストプラクティスを確認してください
+              - インストールコマンド、設定ファイルの書き方、初期化手順などを最新の情報に基づいて記述してください
+            - 各タスクについて、以下を指定してください：
+              - id: タスク番号（1から始まる連番）
+              - overview: 1つの特定のファイルに対して何が行われるかを説明する簡潔なタスク概要
+              - criteria: このタスクの完了条件を示すチェックリスト項目の配列
+              - plan: タスクの詳細な実行計画（実装の手順、考慮事項など。ライブラリのインストールやセットアップが必要な場合は最新の手順を含めること）
+              - dependencies: このタスクの前に完了する必要があるタスクIDの配列（依存関係がない場合は空配列）
+            - タスクを依存関係に基づいて論理的に順序付けてください
+            - 依存関係は配列内のタスクIDを参照する必要があります
+
+            良いタスク分割の例:
+            - タスク1: 認証ロジックを実装 → id: 1, dependencies: []
+            - タスク2: ユーザーモデルを実装 → id: 2, dependencies: [1]
+            - タスク3: 認証ミドルウェアを実装 → id: 3, dependencies: [1]
+            - タスク4: 認証テストを追加 → id: 4, dependencies: [1]
+
+  create_issue:
+    runs-on: ubuntu-latest
+    needs: create_tasks
+    permissions:
+      issues: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Create Task Issues
+        uses: soukadao/workflow-actions/actions/create-tasks@main
+        with:
+          final_output: ${{ needs.create_tasks.outputs.final_output }}
+          body: ${{ github.event.issue.body }}
+
+  label_management:
+    runs-on: ubuntu-latest
+    needs: create_issue
+    permissions:
+      issues: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Update Spec Issue Labels
+        run: gh issue edit "$NUMBER" --add-label "$ADD_LABEL" --remove-label "$REMOVE_LABEL"
+        env:
+          GH_REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.issue.number }}
+          ADD_LABEL: doc-state:completed
+          REMOVE_LABEL: doc-state:draft

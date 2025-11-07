@@ -12,6 +12,8 @@ jobs:
       issues: write
     env:
       GH_TOKEN: ${{ github.token }}
+    outputs:
+      branch_name: ${{ steps.create_branch.outputs.branch_name }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v5
@@ -19,6 +21,7 @@ jobs:
           fetch-depth: 0
 
       - name: Create Phase Branch
+        id: create_branch
         uses: soukadao/workflow-actions/actions/create-phase-branch@main
         with:
           repository: ${{ github.repository }}
@@ -59,6 +62,11 @@ jobs:
             > AIによって生成されました。
 
             # 機能仕様書
+
+            ---
+            requirements_id: ${{ github.event.issue.number }}
+            branch_name: ${{ needs.create_phase_branch.outputs.branch_name }}
+            ---
 
             要求定義ドキュメント: #${{ github.event.issue.number }}
 

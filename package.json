@@ -7,7 +7,8 @@
     "build:create-requirements": "esbuild src/actions/create-requirements.ts --sourcemap=inline --format=cjs --bundle --platform=node --target=node20 --outfile=actions/create-requirements/dist/index.js",
     "build:create-phase-branch": "esbuild src/actions/create-phase-branch.ts --sourcemap=inline --format=cjs --bundle --platform=node --target=node20 --outfile=actions/create-phase-branch/dist/index.js",
     "build:create-spec": "esbuild src/actions/create-spec.ts --sourcemap=inline --format=cjs --bundle --platform=node --target=node20 --outfile=actions/create-spec/dist/index.js",
-    "build": "pnpm run build:create-labels && npm run build:create-requirements && npm run build:create-phase-branch && npm run build:create-spec"
+    "build:create-tasks": "esbuild src/actions/create-tasks.ts --sourcemap=inline --format=cjs --bundle --platform=node --target=node20 --outfile=actions/create-tasks/dist/index.js",
+    "build": "pnpm run build:create-labels && pnpm run build:create-requirements && pnpm run build:create-phase-branch && pnpm run build:create-spec && pnpm run build:create-tasks"
   },
   "keywords": [],
   "author": "",

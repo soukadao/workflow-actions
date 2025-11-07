@@ -114,6 +114,8 @@ async function createPhaseBranch() {
 
   await createAndPushBranch(branchName, baseBranch);
   await updateIssueWithBranch(branchName);
+
+  core.setOutput("branch_name", branchName);
 }
 
 createPhaseBranch();

@@ -1,0 +1,52 @@
+{
+  "type": "object",
+  "properties": {
+    "tasks": {
+      "type": "array",
+      "description": "タスクドキュメントの配列",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "タスクID"
+          },
+          "overview": {
+            "type": "string",
+            "description": "タスクの概要説明"
+          },
+          "criteria": {
+            "type": "array",
+            "description": "完了条件のチェックリスト",
+            "items": {
+              "type": "string"
+            }
+          },
+          "plan": {
+            "type": "string",
+            "description": "タスクの実行計画"
+          },
+          "dependencies": {
+            "type": "array",
+            "description": "依存するタスクIDの配列",
+            "items": {
+              "type": "number"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "overview",
+          "criteria",
+          "plan",
+          "dependencies"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "tasks"
+  ],
+  "additionalProperties": false
+}
