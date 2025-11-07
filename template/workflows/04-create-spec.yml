@@ -25,6 +25,7 @@ jobs:
           issue_body: ${{ github.event.issue.body }}
   create_spec:
     runs-on: ubuntu-latest
+    needs: create_phase_branch
     permissions:
       issues: read
       contents: read
