@@ -1,11 +1,31 @@
 name: Create Spec
 on:
-  workflow_run:
-    workflows: [04-create-phase-branch]
-    types: [completed]
+  issues:
+    types: [closed]
+
 jobs:
+  create_phase_branch:
+    runs-on: ubuntu-latest
+    if: contains(github.event.issue.labels.*.name, 'doc-type:requirements') && contains(github.event.issue.labels.*.name, 'doc-state:draft')
+    permissions:
+      contents: write
+      issues: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Create Phase Branch
+        uses: soukadao/workflow-actions/actions/create-phase-branch@main
+        with:
+          repository: ${{ github.repository }}
+          issue_body: ${{ github.event.issue.body }}
   create_spec:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     permissions:
       issues: read
       contents: read
