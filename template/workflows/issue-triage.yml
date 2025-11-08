@@ -38,7 +38,7 @@ jobs:
         uses: openai/codex-action@v1
         with:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
-          output-schema: template/schema/issue-triage.json
+          output-schema: .github/schema/issue-triage.json
           prompt: |
             Analyze this issue and determine the appropriate label.
 

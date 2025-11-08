@@ -5,6 +5,7 @@ on:
 jobs:
   create_requirements:
     runs-on: ubuntu-latest
+    if: github.event.label.name == 'doc-type:requirements'
     permissions:
       contents: read
     outputs:
