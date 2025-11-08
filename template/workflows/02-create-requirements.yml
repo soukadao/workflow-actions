@@ -1,7 +1,7 @@
 name: Create Requirements
 on:
   issues:
-    types: [opened]
+    types: [labeled]
 jobs:
   create_requirements:
     runs-on: ubuntu-latest

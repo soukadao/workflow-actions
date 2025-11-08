@@ -1,0 +1,19 @@
+{
+    "name": "issue_triage",
+    "description": "GitHubイシューの内容に基づいて適切なラベルを決定します",
+    "strict": true,
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "label": {
+                "type": "string",
+                "description": "イシューに適用するラベル。正常に動作していない内容の場合は 'bug' を使用し、機能要求や要件の場合は 'doc-type:requirements' を使用します。",
+                "enum": ["bug", "doc-type:requirements"]
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "label"
+        ]
+    }
+}

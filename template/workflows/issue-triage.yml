@@ -1,0 +1,77 @@
+name: Issue Triage
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  codex:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      final_message: ${{ steps.run_codex.outputs.final-message }}
+      triage_label: ${{ steps.extract_label.outputs.label }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Get Labels
+        id: get_labels
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const { data } = await github.rest.issues.listLabelsForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            });
+
+            const labelList = data.map(label => `${label.name}: ${label.description || 'No description'}`).join('\n');
+            core.setOutput('labels', labelList);
+            return labelList;
+
+      - name: Run Codex
+        id: run_codex
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          output-schema: template/schema/issue-triage.json
+          prompt: |
+            Analyze this issue and determine the appropriate label.
+
+            Issue #${{ github.event.issue.number }}: ${{ github.event.issue.title }}
+
+            ${{ github.event.issue.body }}
+
+      - name: Extract Label
+        id: extract_label
+        env:
+          CODEX_OUTPUT: ${{ steps.run_codex.outputs.output }}
+        run: |
+          label=$(echo "$CODEX_OUTPUT" | jq -r '.label')
+          echo "label=$label" >> $GITHUB_OUTPUT
+
+  apply_label:
+    runs-on: ubuntu-latest
+    needs: codex
+    if: needs.codex.outputs.triage_label != ''
+    permissions:
+      issues: write
+
+    steps:
+      - name: Apply Label to Issue
+        uses: actions/github-script@v7
+        env:
+          TRIAGE_LABEL: ${{ needs.codex.outputs.triage_label }}
+        with:
+          github-token: ${{ secrets.GH_TOKEN }}
+          script: |
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.issue.number,
+              labels: [process.env.TRIAGE_LABEL]
+            });
